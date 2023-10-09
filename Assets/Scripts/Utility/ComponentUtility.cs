@@ -9,8 +9,8 @@ namespace WorldStreaming
 		{
 			var components = new List<T>();
 
-			var component = go.GetComponent<T>();
-			if (component != null) components.Add(component);
+			var childComponents = go.GetComponents<T>();
+			if (childComponents != null) components.AddRange(childComponents);
 
 			for (var i = 0; i < go.transform.childCount; i++)
 			{

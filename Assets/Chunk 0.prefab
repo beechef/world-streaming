@@ -119,12 +119,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c3c8fe0158bb8a4b8e77fdfb094e603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  size: {x: 100, y: 100}
-  position: {x: 0, y: 0, z: 0}
-  rect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 100
-    height: 100
+  info:
+    id: 1
+    name: Chunk 0
+    area: 0
+    size: {x: 0, y: 0}
+    position: {x: 0, y: 0, z: 0}
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    adjacentChunkIds: 00000000
