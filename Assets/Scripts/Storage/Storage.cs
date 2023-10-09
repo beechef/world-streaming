@@ -5,7 +5,7 @@ namespace WorldStreaming.Storage
 {
 	public abstract class Storage<T> : IStorage
 	{
-		public StorageKey Key { get; }
+		public abstract StorageKey Key { get; }
 		public T Data { get; private set; }
 
 		public void Load()

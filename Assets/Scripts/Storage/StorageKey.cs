@@ -2,6 +2,6 @@
 {
 	public enum StorageKey
 	{
-		IdPooling,
+		PoolingId,
 	}
 }

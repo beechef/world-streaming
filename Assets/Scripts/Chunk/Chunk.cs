@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace WorldStreaming
@@ -9,10 +10,12 @@ namespace WorldStreaming
 		public ChunkInfo info;
 
 		[ShowInInspector] private List<ISimulatedCycle> _simulatedCycles;
+		private Simulator _simulator = new();
 
 		private void Awake()
 		{
 			_simulatedCycles = gameObject.GetAllComponentInChildren<ISimulatedCycle>();
+			_simulator.SimulatedCycles.AddRange(_simulatedCycles);
 		}
 
 		private void OnEnable()
@@ -23,18 +26,22 @@ namespace WorldStreaming
 
 		public void OnStart()
 		{
+			_simulator.Start();
 		}
 
 		public void OnUpdate(float deltaTime)
 		{
-			foreach (var cycle in _simulatedCycles)
-			{
-				cycle.OnUpdate(deltaTime);
-			}
+			_simulator.Update(deltaTime);
 		}
 
 		public void OnStop()
 		{
+			_simulator.Stop();
+		}
+
+		public void Simulate(float time)
+		{
+			_simulator.Simulate(time);
 		}
 
 		public void Bake()
