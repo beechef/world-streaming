@@ -7,7 +7,13 @@ namespace WorldStreaming
 	public class Chunk : MonoBehaviour, ISimulatedCycle
 	{
 		public ChunkInfo info;
+
 		[ShowInInspector] private List<ISimulatedCycle> _simulatedCycles;
+
+		private void Awake()
+		{
+			_simulatedCycles = gameObject.GetAllComponentInChildren<ISimulatedCycle>();
+		}
 
 		private void OnEnable()
 		{
@@ -37,8 +43,6 @@ namespace WorldStreaming
 
 			info.position = transform.position;
 			info.rect = new Rect(info.position.x - info.size.x / 2f, info.position.z - info.size.y / 2f, info.size.x, info.size.y);
-
-			_simulatedCycles = gameObject.GetAllComponentInChildren<ISimulatedCycle>();
 		}
 	}
 }

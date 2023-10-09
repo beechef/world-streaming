@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -7,9 +8,12 @@ namespace WorldStreaming
 {
 	public class WorldStreamingController : MonoBehaviour
 	{
-		[SerializeField] private WorldInfo worldInfo;
+		public event Action<Chunk> OnChunkLoaded;
+		public event Action<Chunk> OnChunkUnloaded;
 
+		[SerializeField] private WorldInfo worldInfo;
 		[ShowInInspector] private IObservableMovement _target;
+
 		private Vector3 _lastPosition;
 
 		private WorldSpawner _spawner;
@@ -83,6 +87,15 @@ namespace WorldStreaming
 
 			var chunk = await _spawner.InstantiateChunk(chunkInfo);
 			AddQueueChunk(chunk);
+
+			OnChunkLoaded?.Invoke(chunk);
+		}
+
+		private void DestroyChunk(Chunk chunk)
+		{
+			_spawner.DestroyChunk(chunk);
+			
+			OnChunkUnloaded?.Invoke(chunk);
 		}
 
 		private void AddQueueChunk(Chunk chunk)
@@ -126,7 +139,7 @@ namespace WorldStreaming
 				var loadedChunk = _loadedChunks[index];
 				if (detectZone.IsIntersecting(loadedChunk.info.rect)) continue;
 
-				_spawner.DestroyChunk(loadedChunk);
+				DestroyChunk(loadedChunk);
 				_loadedChunks.RemoveAt(index--);
 				_loadedChunkIds.Remove(loadedChunk.info.id);
 			}
