@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using WorldStreaming.StateData;
+﻿using WorldStreaming.StateData;
 
 namespace WorldStreaming.Entity
 {
@@ -8,8 +7,6 @@ namespace WorldStreaming.Entity
 		public override StateDataType StateDataType { get; }
 
 		public override IStateData StateData => _data;
-		public override bool IsSave { get; }
-
 		public override ISimulatedCycleData Data { get; }
 
 		private StateDataMonkey _data;
@@ -30,7 +27,18 @@ namespace WorldStreaming.Entity
 
 		public override void OnUpdate(float deltaTime)
 		{
-			transform.position += Vector3.forward * deltaTime;
+			OnMoved?.Invoke(transform.position);
+		}
+
+		public override void OnSimulate(float deltaTime)
+		{
+			OnUpdate(deltaTime);
+		}
+
+		private void Update()
+		{
+			OnMoved?.Invoke(transform.position);
+
 		}
 
 		public override void OnStop()

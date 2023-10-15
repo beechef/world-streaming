@@ -10,12 +10,10 @@ namespace WorldStreaming.Entity
 		public Action<Vector3> OnMoved { get; set; }
 
 		public abstract StateDataType StateDataType { get; }
-	
+
 		public abstract IStateData StateData { get; }
 
 		public abstract ISimulatedCycleData Data { get; }
-
-		public abstract bool IsSave { get; }
 
 		public abstract void InitDefaultData();
 
@@ -24,7 +22,7 @@ namespace WorldStreaming.Entity
 		public abstract void OnStart();
 
 		public abstract void OnUpdate(float deltaTime);
-
+		public abstract void OnSimulate(float deltaTime);
 		public abstract void OnStop();
 	}
 }

@@ -9,8 +9,6 @@ namespace WorldStreaming.Entity
 		public override StateDataType StateDataType => StateDataType.BananaTree;
 
 		public override IStateData StateData => _data;
-		public override bool IsSave => true;
-
 		public override ISimulatedCycleData Data => _data;
 
 		[ShowInInspector] private StateDataBananaTree _data;
@@ -42,10 +40,15 @@ namespace WorldStreaming.Entity
 				return;
 			}
 
-			_data.Count++;
+			_data.BananaCount++;
 			_data.Timer -= 5f;
 
-			Debug.Log("Ok");
+			Debug.Log("Spawn Banana");
+		}
+
+		public override void OnSimulate(float deltaTime)
+		{
+			OnUpdate(deltaTime);
 		}
 
 		public override void OnStop()

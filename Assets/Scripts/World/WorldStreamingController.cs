@@ -11,7 +11,7 @@ namespace WorldStreaming
 		public event Action<Chunk> OnChunkLoaded;
 		public event Action<Chunk> OnChunkUnloaded;
 
-		[SerializeField] private WorldInfo worldInfo;
+		[HideInInspector] public WorldInfo worldInfo;
 		[ShowInInspector] private IObservableMovement _target;
 
 		private Vector3 _lastPosition;
@@ -94,7 +94,7 @@ namespace WorldStreaming
 		private void DestroyChunk(Chunk chunk)
 		{
 			_spawner.DestroyChunk(chunk);
-			
+
 			OnChunkUnloaded?.Invoke(chunk);
 		}
 

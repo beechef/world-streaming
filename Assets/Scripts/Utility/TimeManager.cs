@@ -19,5 +19,15 @@ namespace WorldStreaming
 		{
 			CurrentTicks += TimeSpan.FromSeconds(Time.deltaTime).Ticks;
 		}
+
+		private void OnApplicationPause(bool pauseStatus)
+		{
+			CurrentTicks = DateTime.UtcNow.Ticks;
+		}
+
+		private void OnApplicationFocus(bool hasFocus)
+		{
+			CurrentTicks = DateTime.UtcNow.Ticks;
+		}
 	}
 }

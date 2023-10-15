@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine.Serialization;
 
 namespace WorldStreaming.StateData
 {
@@ -8,9 +9,9 @@ namespace WorldStreaming.StateData
 		public string IdSceneObject { get; set; }
 		public StateDataType Type => StateDataType.BananaTree;
 
-		public int Count;
+		public int BananaCount;
 		public float Timer;
-		
+
 		public long LastTick { get; set; }
 	}
 }

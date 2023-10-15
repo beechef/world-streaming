@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using WorldStreaming.StateData;
 
 namespace WorldStreaming
 {
+	[RequireComponent(typeof(ChunkDataController))]
 	public class Chunk : MonoBehaviour
 	{
 		public ChunkInfo info;
@@ -14,7 +13,12 @@ namespace WorldStreaming
 		[ShowInInspector] private List<ISimulatedCycle> _simulatedCycles;
 		private readonly Simulator _simulator = new();
 
-		private ChunkData _data;
+		private ChunkDataController _dataController;
+
+		private void Awake()
+		{
+			_dataController = GetComponent<ChunkDataController>();
+		}
 
 		private void OnEnable()
 		{
@@ -53,42 +57,25 @@ namespace WorldStreaming
 
 		public void InitDefaultData()
 		{
-			_data = new ChunkData();
-
-			var stateComponents = gameObject.GetAllComponentInChildren<IStateComponent>();
-			var currentTick = DateTime.UtcNow.Ticks;
-
-			foreach (var stateComponent in stateComponents)
-			{
-				stateComponent.InitDefaultData();
-
-				if (stateComponent.StateData is ISimulatedCycleData cycleData)
-				{
-					cycleData.LastTick = currentTick;
-				}
-
-				_data.StateData.Add(stateComponent.StateData);
-			}
+			_dataController.InitDefaultData();
 		}
 
 		public void Init(ChunkData data)
 		{
-			_data = data;
-
-			foreach (var stateData in data.StateData)
-			{
-				FactoryStateComponent.Create(stateData);
-			}
+			_dataController.Init(data);
 		}
 
 		public void OnLoad()
 		{
+			Debug.Log($"Load {info.name}");
+
 			_simulatedCycles = gameObject.GetAllComponentInChildren<ISimulatedCycle>();
 			_simulator.Add(_simulatedCycles);
 		}
 
 		public void OnUnload()
 		{
+			Debug.Log($"Unload {info.name}");
 		}
 
 		public void OnSave()
@@ -97,7 +84,7 @@ namespace WorldStreaming
 
 		public ChunkData GetData()
 		{
-			return _data;
+			return _dataController.Data;
 		}
 	}
 }

@@ -23,9 +23,8 @@ namespace WorldStreaming
 		public void Update(float deltaTime)
 		{
 			var cycle = SimulatedCycles.First;
-			var currentTick = TimeManager.Instance.CurrentTicks;
-			var deltaTimeTick = TimeSpan.FromSeconds(deltaTime).Ticks;
-			var simulationDeltaTimeTick = TimeSpan.FromSeconds(SimulationDeltaTime).Ticks;
+			var currentTicks = TimeManager.Instance.CurrentTicks;
+			var deltaTimeTicks = TimeSpan.FromSeconds(deltaTime).Ticks;
 
 			while (cycle != null)
 			{
@@ -33,9 +32,9 @@ namespace WorldStreaming
 
 				if (cycle.Value.Data != null)
 				{
-					cycle.Value.Data.LastTick += deltaTimeTick;
+					cycle.Value.Data.LastTick += deltaTimeTicks;
 
-					if (currentTick - cycle.Value.Data.LastTick >= simulationDeltaTimeTick)
+					if (currentTicks - cycle.Value.Data.LastTick >= 0)
 					{
 						UnSyncedCycles.AddLast(cycle.Value);
 					}
@@ -62,8 +61,8 @@ namespace WorldStreaming
 
 			_isSimulating = true;
 
-			var currentTick = TimeManager.Instance.CurrentTicks;
-			var simulationDeltaTimeTick = TimeSpan.FromSeconds(SimulationDeltaTime).Ticks;
+			var currentTicks = TimeManager.Instance.CurrentTicks;
+			var simulationDeltaTimeTicks = TimeSpan.FromSeconds(SimulationDeltaTime).Ticks;
 
 			while (UnSyncedCycles.Count > 0)
 			{
@@ -71,11 +70,15 @@ namespace WorldStreaming
 
 				while (cycle != null)
 				{
-					cycle.Value.OnUpdate(SimulationDeltaTime);
-					cycle.Value.Data.LastTick += simulationDeltaTimeTick;
+					var deltaTimeTicks = currentTicks - cycle.Value.Data.LastTick;
+					deltaTimeTicks = deltaTimeTicks > simulationDeltaTimeTicks ? simulationDeltaTimeTicks : deltaTimeTicks;
+
+					var deltaTime = (float)TimeSpan.FromTicks(deltaTimeTicks).TotalSeconds;
+					cycle.Value.OnSimulate(deltaTime);
+					cycle.Value.Data.LastTick += simulationDeltaTimeTicks;
 
 					var nextCycle = cycle.Next;
-					if (cycle.Value.Data.LastTick + simulationDeltaTimeTick >= currentTick)
+					if (cycle.Value.Data.LastTick + simulationDeltaTimeTicks >= currentTicks)
 					{
 						UnSyncedCycles.Remove(cycle.Value);
 					}
