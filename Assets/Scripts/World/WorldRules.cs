@@ -18,7 +18,7 @@ namespace WorldStreaming
 		private const string AreaGroup = "World_Streaming-{0}";
 		private const string ChunkKey = "Chunk-{0}-{1}-{2}";
 
-		private const int AreaOffset = 1000;
+		public const int AreaOffset = 1000;
 		public const float MinDetectedDistance = 1f;
 
 		public static string GetAreaPath(ChunkInfo chunkInfo)
@@ -76,16 +76,7 @@ namespace WorldStreaming
 			entry.SetAddress(chunkKey);
 			entry.SetLabel(areaGroup, true, true);
 		}
-
-		public static int CreateChunkId(Dictionary<ChunkArea, int> ids, ChunkInfo chunkInfo)
-		{
-			var area = chunkInfo.area;
-			ids.TryAdd(area, (int)area * AreaOffset);
-
-			ids[area]++;
-			return ids[area];
-		}
-
+		
 		public static List<Vector2> GetAdjacentChunkPositions(ChunkInfo targetChunk)
 		{
 			var adjacentChunkPositions = new List<Vector2>();

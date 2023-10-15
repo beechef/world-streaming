@@ -2,21 +2,21 @@
 
 namespace WorldStreaming.Pooling
 {
-	public static class PoolingId
+	public class PoolingId
 	{
-		private static readonly StoragePoolingIdData _data;
+		private readonly StoragePoolingIdData _data;
 
-		static PoolingId()
+		public PoolingId(StoragePoolingIdData data)
 		{
-			_data = StorageController.Instance.GetStorage<StoragePoolingId>().Data;
+			_data = data;
 		}
 
-		public static long GetId()
+		public long GetId()
 		{
 			return _data.FreeIds.Count == 0 ? _data.Id++ : _data.FreeIds.Pop();
 		}
 
-		public static void ReturnId(long id)
+		public void ReturnId(long id)
 		{
 			_data.FreeIds.Push(id);
 		}

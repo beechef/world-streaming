@@ -1,22 +1,20 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using Unity.VisualScripting;
 using UnityEngine;
+using WorldStreaming.StateData;
 
 namespace WorldStreaming
 {
-	public class Chunk : MonoBehaviour, ISimulatedCycle
+	public class Chunk : MonoBehaviour
 	{
 		public ChunkInfo info;
+		[ShowInInspector] public ISimulatedCycleData Data => null;
 
 		[ShowInInspector] private List<ISimulatedCycle> _simulatedCycles;
-		private Simulator _simulator = new();
+		private readonly Simulator _simulator = new();
 
-		private void Awake()
-		{
-			_simulatedCycles = gameObject.GetAllComponentInChildren<ISimulatedCycle>();
-			_simulator.SimulatedCycles.AddRange(_simulatedCycles);
-		}
+		private ChunkData _data;
 
 		private void OnEnable()
 		{
@@ -29,19 +27,14 @@ namespace WorldStreaming
 			_simulator.Start();
 		}
 
-		public void OnUpdate(float deltaTime)
+		public void Update()
 		{
-			_simulator.Update(deltaTime);
+			_simulator.Update(Time.deltaTime);
 		}
 
 		public void OnStop()
 		{
 			_simulator.Stop();
-		}
-
-		public void Simulate(float time)
-		{
-			_simulator.Simulate(time);
 		}
 
 		public void Bake()
@@ -50,6 +43,61 @@ namespace WorldStreaming
 
 			info.position = transform.position;
 			info.rect = new Rect(info.position.x - info.size.x / 2f, info.position.z - info.size.y / 2f, info.size.x, info.size.y);
+
+			var sceneObjects = gameObject.GetAllComponentInChildren<SceneObject>();
+			foreach (var sceneObject in sceneObjects)
+			{
+				sceneObject.GenerateId();
+			}
+		}
+
+		public void InitDefaultData()
+		{
+			_data = new ChunkData();
+
+			var stateComponents = gameObject.GetAllComponentInChildren<IStateComponent>();
+			var currentTick = DateTime.UtcNow.Ticks;
+
+			foreach (var stateComponent in stateComponents)
+			{
+				stateComponent.InitDefaultData();
+
+				if (stateComponent.StateData is ISimulatedCycleData cycleData)
+				{
+					cycleData.LastTick = currentTick;
+				}
+
+				_data.StateData.Add(stateComponent.StateData);
+			}
+		}
+
+		public void Init(ChunkData data)
+		{
+			_data = data;
+
+			foreach (var stateData in data.StateData)
+			{
+				FactoryStateComponent.Create(stateData);
+			}
+		}
+
+		public void OnLoad()
+		{
+			_simulatedCycles = gameObject.GetAllComponentInChildren<ISimulatedCycle>();
+			_simulator.Add(_simulatedCycles);
+		}
+
+		public void OnUnload()
+		{
+		}
+
+		public void OnSave()
+		{
+		}
+
+		public ChunkData GetData()
+		{
+			return _data;
 		}
 	}
 }

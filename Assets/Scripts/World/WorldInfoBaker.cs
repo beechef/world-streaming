@@ -14,13 +14,11 @@ namespace WorldStreaming
 		{
 			chunks = gameObject.GetAllComponentInChildren<Chunk>();
 
-			var chunkIds = new Dictionary<ChunkArea, int>();
-
 			foreach (var chunk in chunks)
 			{
 				chunk.Bake();
 
-				chunk.info.id = WorldRules.CreateChunkId(chunkIds, chunk.info);
+				chunk.info.id = worldInfo.GetChunkId(chunk.info);
 				chunk.info.adjacentChunkIds = WorldRules.GetAdjacentChunkIds(chunk, chunks, worldInfo.detectedZoneSize);
 			}
 		}

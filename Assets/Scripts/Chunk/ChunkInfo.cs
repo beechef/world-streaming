@@ -17,5 +17,15 @@ namespace WorldStreaming
 		public Rect rect;
 
 		[ReadOnly] public List<int> adjacentChunkIds;
+
+		public override bool Equals(object obj)
+		{
+			if (obj is ChunkInfo chunkInfo)
+			{
+				return id == chunkInfo.id && area == chunkInfo.area;
+			}
+
+			return false;
+		}
 	}
 }

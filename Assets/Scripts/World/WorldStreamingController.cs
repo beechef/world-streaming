@@ -40,7 +40,7 @@ namespace WorldStreaming
 			_spawner.Init(worldInfo, transform);
 
 			//Cheat
-			SetTarget(gameObject.GetAllComponentInChildren<Entity>().First());
+			SetTarget(gameObject.GetAllComponentInChildren<Entity.Entity>().First());
 
 			if (_target == null) return;
 
@@ -159,7 +159,7 @@ namespace WorldStreaming
 			{
 				foreach (var adjacentChunkId in _currentChunk.info.adjacentChunkIds)
 				{
-					var adjacentChunkInfo = worldInfo.idSortedChunkInfos[adjacentChunkId];
+					var adjacentChunkInfo = worldInfo.IDSortedChunkInfos[adjacentChunkId];
 					var isExist = _loadedChunkIds.Contains(adjacentChunkInfo.id);
 					var isIntersecting = detectZone.IsIntersecting(adjacentChunkInfo.rect);
 					if (isExist || !isIntersecting) continue;

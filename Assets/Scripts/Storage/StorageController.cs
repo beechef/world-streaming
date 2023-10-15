@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
-using WorldStreaming.Pooling;
 
 namespace WorldStreaming.Storage
 {
@@ -58,12 +56,6 @@ namespace WorldStreaming.Storage
 			{
 				storage.Save();
 			}
-		}
-
-		[Button]
-		public void GetId()
-		{
-			Debug.Log(PoolingId.GetId());
 		}
 	}
 }

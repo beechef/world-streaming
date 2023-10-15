@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using WorldStreaming.Storage;
 
 namespace WorldStreaming
 {
@@ -8,12 +9,10 @@ namespace WorldStreaming
 	{
 		private WorldStreamingController _streamingController;
 
-		private Simulator _simulator;
 		private readonly LinkedList<Chunk> _chunks = new();
 
 		private void Awake()
 		{
-			_simulator = new Simulator();
 			_streamingController = GetComponent<WorldStreamingController>();
 		}
 
@@ -24,37 +23,68 @@ namespace WorldStreaming
 			_streamingController.OnChunkLoaded += OnChunkLoaded;
 			_streamingController.OnChunkUnloaded += OnChunkUnloaded;
 		}
-
-		private void Update()
-		{
-			_simulator.Update(Time.deltaTime);
-		}
-
+		
 		private void OnDisable()
 		{
 			_streamingController.OnChunkLoaded -= OnChunkLoaded;
 			_streamingController.OnChunkUnloaded -= OnChunkUnloaded;
 
-			_simulator.Stop();
 
 			_chunks.Clear();
-			_simulator.SimulatedCycles.Clear();
 		}
 
 		private void OnChunkLoaded(Chunk chunk)
 		{
+			var chunkData = ChunkStorage.LoadChunkData(chunk.info);
+			
+			if (chunkData == null)
+			{
+				chunk.InitDefaultData();
+			}
+			else
+			{
+				chunk.Init(chunkData);
+			}
+			
+			chunk.OnLoad();
 			chunk.OnStart();
 
 			_chunks.AddLast(chunk);
-			_simulator.SimulatedCycles.AddLast(chunk);
 		}
 
 		private void OnChunkUnloaded(Chunk chunk)
 		{
+			var chunkData = chunk.GetData();
+
+			ChunkStorage.SaveChunkData(chunk.info, chunkData);
+			chunk.OnSave();
 			chunk.OnStop();
+			chunk.OnUnload();
 
 			_chunks.Remove(chunk);
-			_simulator.SimulatedCycles.Remove(chunk);
+		}
+
+		private void SaveAll()
+		{
+			foreach (var chunk in _chunks)
+			{
+				var chunkData = chunk.GetData();
+
+				ChunkStorage.SaveChunkData(chunk.info, chunkData);
+				chunk.OnSave();
+			}
+		}
+
+		private void OnApplicationPause(bool pauseStatus)
+		{
+			if (!pauseStatus) return;
+
+			SaveAll();
+		}
+
+		private void OnApplicationQuit()
+		{
+			SaveAll();
 		}
 	}
 }
